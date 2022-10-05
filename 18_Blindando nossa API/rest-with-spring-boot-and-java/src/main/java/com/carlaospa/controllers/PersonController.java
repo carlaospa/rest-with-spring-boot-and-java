@@ -1,4 +1,4 @@
-package com.carlaospa;
+package com.carlaospa.controllers;
 
 import java.util.List;
 
