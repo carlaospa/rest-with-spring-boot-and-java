@@ -14,6 +14,8 @@ import com.carlaospa.mapper.DozerMapper;
 import com.carlaospa.model.Person;
 import com.carlaospa.repository.PersonRepository;
 
+import jakarta.transaction.Transactional;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -97,6 +99,24 @@ public class PersonServices {
 		return vo;
 	}
 
+	@Transactional
+	public PersonVO disablePerson(Long id) {
+
+		logger.info("Disabling one person!");
+		
+		repository.disabledPerson(id);
+
+		var entity = repository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("No records found for this ID!"));
+		var vo = DozerMapper.parseObject(entity, PersonVO.class);
+		try {
+			vo.add(linkTo(methodOn(PersonController.class).findById(id)).withSelfRel());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return vo;
+	}
+	
 	public void delete(Long id) {
 
 		logger.info("Deleting one person!");
