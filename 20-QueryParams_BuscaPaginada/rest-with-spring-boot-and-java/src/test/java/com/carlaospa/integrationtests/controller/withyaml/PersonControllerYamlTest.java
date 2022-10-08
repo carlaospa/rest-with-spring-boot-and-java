@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -22,6 +19,7 @@ import com.carlaospa.integrationtestcontainers.AbstractIntegrationTest;
 import com.carlaospa.integrationtests.controller.withyaml.mapper.YMLMapper;
 import com.carlaospa.integrationtests.vo.AccountCredentialsVO;
 import com.carlaospa.integrationtests.vo.PersonVO;
+import com.carlaospa.integrationtests.vo.pagedmodels.PagedModelPerson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -269,7 +267,7 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
 	@Order(6)
 	public void testFindAll() throws JsonMappingException, JsonProcessingException {
 				
-		var content =given().spec(specification)
+		var wrapper =given().spec(specification)
 							.config(
 						RestAssuredConfig
 						.config()
@@ -277,15 +275,16 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
 								.encodeContentTypeAs(TestConfigs.CONTENT_TYPE_YML, ContentType.TEXT)))
 				.contentType(TestConfigs.CONTENT_TYPE_YML)
 				.accept(TestConfigs.CONTENT_TYPE_YML)
+				.queryParams("page", 3, "size", 10, "direction", "asc")
 					.when()
 					.get()
 				.then()
 					.statusCode(200)
 				.extract()
 					.body()
-					.as(PersonVO[].class, objectMapper);
+					.as(PagedModelPerson.class, objectMapper);
 		
-		List<PersonVO> people = Arrays.asList(content);
+		var people = wrapper.getContent();
 		
 		PersonVO foundPersonOne = people.get(0);
 		
@@ -296,11 +295,11 @@ public class PersonControllerYamlTest extends AbstractIntegrationTest {
 		assertNotNull(foundPersonOne.getGender());
 
 		assertTrue(foundPersonOne.getEnabled());
-		assertEquals(1, foundPersonOne.getId());
+		assertEquals(675, foundPersonOne.getId());
 		
-		assertEquals("Carlos Alberto", foundPersonOne.getFirstName());
-		assertEquals("Rodrigues", foundPersonOne.getLastName());
-		assertEquals("Uberlândia", foundPersonOne.getAddress());
+		assertEquals("Alic", foundPersonOne.getFirstName());
+		assertEquals("Terbrug", foundPersonOne.getLastName());
+		assertEquals("3 Eagle Crest Court", foundPersonOne.getAddress());
 		assertEquals("Male", foundPersonOne.getGender());
 	}	
 

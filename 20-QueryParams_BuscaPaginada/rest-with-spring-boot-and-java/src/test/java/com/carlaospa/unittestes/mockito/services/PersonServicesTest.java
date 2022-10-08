@@ -151,7 +151,7 @@ class PersonServicesTest {
 		services.delete(1L);
 	}	
 	
-
+    /*
 	@Test
 	void testFindAll() {
 		
@@ -188,6 +188,6 @@ class PersonServicesTest {
 		assertEquals("Last Name Test4", personFour.getLastName());
 		assertEquals("Male", personFour.getGender());
 		
-	}
+	}*/
     
 }
